@@ -76,7 +76,7 @@ function init()
     
   params:add{type = "option", id = "rotation", name = "Rotation", options = {"0","90","180","270"}, default = 1,
     action = function(value) 
-        grid_device:rotation(value)
+        grid_device:rotation(value-1)
         rotationpos = value 
     end}
 
@@ -380,9 +380,9 @@ function redraw()
   screen.text("GRID TEST")
 
   screen.move(0, 24)
-  if rotationpos == 1 then rdeg = 90
-  elseif rotationpos == 2 then rdeg = 180
-  elseif rotationpos == 3 then  rdeg = 270
+  if rotationpos == 2 then rdeg = 90
+  elseif rotationpos == 3 then  rdeg = 180
+  elseif rotationpos == 4 then  rdeg = 270
   else rdeg = 0
   end
 
