@@ -38,7 +38,7 @@ local rotationpos = 0
 local focus = { x = 0, y = 0, z = 0 }
 local pixels = {}
 local patterns = {"fade", "chase", "diagonal", "random"}
-local selectedpattern = 3
+local selectedpattern = 1
 local grid_device
 local grid_w
 local grid_h
