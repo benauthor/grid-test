@@ -9,7 +9,7 @@ based in part on the `Monome Home` and `test-grid` maxpats
 
 ### Docs
 ```
---	Press any grid key to light up that key.
+--  Press any grid key to light up that key.
 
 --  Screen will show `x,y,z` coordinates for each grid key press. `z` is 1 for key-down, 0 for key-up.
 	
