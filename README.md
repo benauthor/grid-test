@@ -5,6 +5,8 @@ v0.1.2
 
 A utility script for testing grids
 
+based in part on the `Monome Home` and `test-grid` maxpats
+
 ### Docs
 ```
 --  K2 : 2 second press + release = all leds on
