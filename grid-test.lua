@@ -4,13 +4,13 @@
 --   . . . . . . . . 
 --   . . . . . . . .   
 --   . . . . . . . . 
---   . . . . . . . .   v0.1.2
+--   . . . . . . . .   v0.1.3
 --   . . . . . . . . 
 
 
 
 
--- GRID TEST 0.1.2
+-- GRID TEST 0.1.3
 -- @okyeron
 -- 
 -- 
@@ -36,6 +36,8 @@ local devicepos = 1
 local rotationpos = 0
 
 local focus = { x = 0, y = 0, z = 0 }
+local tiltvals = { x = 0, y = 0, z = 0 }
+
 local pixels = {}
 local patterns = {"fade", "chase", "diagonal", "random"}
 local selectedpattern = 1
@@ -53,6 +55,9 @@ function init()
   print ("grid " .. grid.vports[devicepos].name.." "..grid_w .."x"..grid_h)
   grid_device:rotation(0)
 
+  grid_device:tilt_enable(1,1) -- sensor number	1-8, 1 = on , 
+
+
   -- Get a list of grid devices
   for id,device in pairs(grid.vports) do
     grds[id] = device.name
@@ -67,6 +72,7 @@ function init()
       grid_device.key = nil
       grid_device = grid.connect(value)
       grid_device.key = grid_key
+      grid_device.tilt = grid_tilt
       grid_dirty = true
       grid_w = grid_device.cols
       grid_h = grid_device.rows
@@ -76,7 +82,7 @@ function init()
     
   params:add{type = "option", id = "rotation", name = "Rotation", options = {"0","90","180","270"}, default = 1,
     action = function(value) 
-        grid_device:rotation(value)
+        grid_device:rotation(value-1)
         rotationpos = value 
     end}
 
@@ -91,6 +97,7 @@ end
 function connect()
   grid_device = grid.connect()
   grid_device.key = grid_key
+  grid_device.tilt = grid_tilt
   grid_device.add = on_grid_add
   grid_device.remove = on_grid_remove
   grid_w = grid_device.cols
@@ -250,6 +257,15 @@ function gridfrompixels()
   end 
 end
 
+function grid_tilt(sensor, x, y, z)
+  print("x",x)
+  print("y",y)
+  print("z",z)
+  tiltvals.x = x
+  tiltvals.y = y
+  tiltvals.z = z
+end
+
 function grid_key(x, y, z)
   focus.x = x
   focus.y = y
@@ -380,19 +396,22 @@ function redraw()
   screen.text("GRID TEST")
 
   screen.move(0, 24)
-  if rotationpos == 1 then rdeg = 90
-  elseif rotationpos == 2 then rdeg = 180
-  elseif rotationpos == 3 then  rdeg = 270
+  if rotationpos == 2 then rdeg = 90
+  elseif rotationpos == 3 then  rdeg = 180
+  elseif rotationpos == 4 then  rdeg = 270
   else rdeg = 0
   end
 
   screen.text("Rotation = " .. rdeg)
 
-  screen.move(0, 50)
-  screen.text("Grid Key: "..focus.x..", "..focus.y..", "..focus.z)
-
-  screen.move(0, 34)
+  screen.move(0, 33)
   screen.text("Pattern: ".. patterns[selectedpattern])
+
+  screen.move(0, 42)
+  screen.text("Tilt: "..tiltvals.x..", "..tiltvals.y..", "..tiltvals.z)
+
+  screen.move(0, 51)
+  screen.text("Grid Key: "..focus.x..", "..focus.y..", "..focus.z)
 
 
   screen.move(0, 60)
@@ -406,5 +425,5 @@ end
 
 -- called on script quit, release memory
 function cleanup ()
-  
+  grid_device:tilt_enable(1,0) -- sensor 1, 0 = off
 end
