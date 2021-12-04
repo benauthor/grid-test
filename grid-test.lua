@@ -4,13 +4,13 @@
 --   . . . . . . . . 
 --   . . . . . . . .   
 --   . . . . . . . . 
---   . . . . . . . .   v0.1.3
+--   . . . . . . . .   v0.1.5
 --   . . . . . . . . 
 
 
 
 
--- GRID TEST 0.1.3
+-- GRID TEST 0.1.5
 -- @okyeron
 -- 
 -- 
@@ -54,7 +54,7 @@ function init()
   print ("grid " .. grid.vports[devicepos].name.." "..grid_w .."x"..grid_h)
   grid_device:rotation(0)
 
-  grid_device:tilt_enable(0,tiltEnable and 1 or 0) -- sensor number	1-8, 1 = on , 
+  grid_device:tilt_enable(0,tiltEnable and 1 or 0) -- sensor number	0-7, 1 = on , 
 
 
   -- Get a list of grid devices
@@ -87,6 +87,12 @@ function init()
     action = function(value) 
         grid_device:rotation(value-1)
         rotationpos = value 
+    end}
+
+  params:add{type = "option", id = "tilt", name = "Tilt Enable", options = {"off","on"}, default = 1,
+    action = function(value) 
+        grid_device:tilt_enable(0,value-1)
+        if (value == 1) then tiltEnable = true else tiltEnable = false end
     end}
 
   -- setup pixel array for oled
@@ -435,5 +441,5 @@ end
 
 -- called on script quit, release memory
 function cleanup ()
-  grid_device:tilt_enable(0,0) -- sensor 1, 0 = off
+  grid_device:tilt_enable(0,0) -- sensor 0, 0 = off
 end
