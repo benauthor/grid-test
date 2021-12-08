@@ -1,6 +1,6 @@
 
 # GRID TEST
-v0.1.2
+v0.1.5
 @okyeron
 
 A utility script for testing grids
@@ -12,8 +12,10 @@ based in part on the `Monome Home` and `test-grid` maxpats
 --  Press any grid key to light up that key.
 
 --  Screen will show `x,y,z` coordinates for each grid key press. `z` is 1 for key-down, 0 for key-up.
-	
---  Select grid device port or set grid rotation from parameters screen
+
+-- Tilt values will display for grids with that feature.  
+
+--  Select grid device port, enable tilt, and set grid rotation from parameters screen
 
 --  Controls
 --
