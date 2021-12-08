@@ -44,7 +44,7 @@ local selectedpattern = 1
 local grid_device
 local grid_w
 local grid_h
-local tiltEnable = true
+local tiltEnable = false
 
 -- init function
 function init()
@@ -423,9 +423,11 @@ function redraw()
   screen.move(0, 33)
   screen.text("Pattern: ".. patterns[selectedpattern])
 
-  screen.move(0, 42)
-  screen.text("Tilt: "..tiltvals.x..", "..tiltvals.y..", "..tiltvals.z)
-
+  if (tiltEnable) then
+    screen.move(0, 42)
+    screen.text("Tilt: "..tiltvals.x..", "..tiltvals.y..", "..tiltvals.z)
+  end 
+  
   screen.move(0, 51)
   screen.text("Grid Key: "..focus.x..", "..focus.y..", "..focus.z)
 
