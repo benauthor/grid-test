@@ -98,7 +98,7 @@ function init()
   params:add{type = "option", id = "tilt", name = "Tilt Enable", options = {"off","on"}, default = 1,
     action = function(value) 
         grid_device:tilt_enable(0,value-1)
-        if (value == 1) then tiltEnable = true else tiltEnable = false end
+        if (value == 2) then tiltEnable = true else tiltEnable = false end
     end}
 
   -- setup pixel array for oled
@@ -276,9 +276,6 @@ function gridfrompixels()
 end
 
 function grid_tilt(sensor, x, y, z)
-  -- print("x",x)
-  -- print("y",y)
-  --print("z",z)
   if (x == nil) then x=0 end
   tiltvals.x = x
   if (y == nil) then y=0 end
