@@ -4,13 +4,13 @@
 --   . . . . . . . . 
 --   . . . . . . . .   
 --   . . . . . . . . 
---   . . . . . . . .   v0.1.3
+--   . . . . . . . .   v0.1.5
 --   . . . . . . . . 
 
 
 
 
--- GRID TEST 0.1.3
+-- GRID TEST 0.1.5
 -- @okyeron
 -- 
 -- 
@@ -36,14 +36,15 @@ local devicepos = 1
 local rotationpos = 0
 
 local focus = { x = 0, y = 0, z = 0 }
+local tiltvals = { x = 0, y = 0, z = 0 }
+
 local pixels = {}
 local patterns = {"fade", "chase", "diagonal", "random"}
 local selectedpattern = 1
 local grid_device
 local grid_w
 local grid_h
-
-
+local tiltEnable = true
 
 -- init function
 function init()
@@ -52,6 +53,9 @@ function init()
   connect()
   print ("grid " .. grid.vports[devicepos].name.." "..grid_w .."x"..grid_h)
   grid_device:rotation(0)
+
+  grid_device:tilt_enable(0,tiltEnable and 1 or 0) -- sensor number	0-7, 1 = on , 
+
 
   -- Get a list of grid devices
   for id,device in pairs(grid.vports) do
@@ -67,10 +71,15 @@ function init()
       grid_device.key = nil
       grid_device = grid.connect(value)
       grid_device.key = grid_key
+      grid_device.tilt = grid_tilt
       grid_dirty = true
       grid_w = grid_device.cols
       grid_h = grid_device.rows
       devicepos = value
+      for i = 1, grid_w*grid_h do
+        pixels[i] = 0
+      end
+      grid_device:tilt_enable(0,tiltEnable and 1 or 0)
       print ("grid selected " .. grid.vports[devicepos].name.." "..grid_w .."x"..grid_h)
     end}
     
@@ -80,10 +89,16 @@ function init()
         rotationpos = value 
     end}
 
+  params:add{type = "option", id = "tilt", name = "Tilt Enable", options = {"off","on"}, default = 1,
+    action = function(value) 
+        grid_device:tilt_enable(0,value-1)
+        if (value == 1) then tiltEnable = true else tiltEnable = false end
+    end}
+
   -- setup pixel array for oled
-  for i = 1, grid_w*grid_h do
-    pixels[i] = 0;
-  end
+  -- for i = 1, grid_w*grid_h do
+  --   pixels[i] = 0;
+  -- end
     
   setup_metros()
 end
@@ -91,10 +106,14 @@ end
 function connect()
   grid_device = grid.connect()
   grid_device.key = grid_key
+  grid_device.tilt = grid_tilt
   grid_device.add = on_grid_add
   grid_device.remove = on_grid_remove
   grid_w = grid_device.cols
   grid_h = grid_device.rows
+  for i = 1, grid_w*grid_h do
+    pixels[i] = 0;
+  end
 
 end
 
@@ -250,6 +269,19 @@ function gridfrompixels()
   end 
 end
 
+function grid_tilt(sensor, x, y, z)
+  -- print("x",x)
+  -- print("y",y)
+  --print("z",z)
+  if (x == nil) then x=0 end
+  tiltvals.x = x
+  if (y == nil) then y=0 end
+  tiltvals.y = y
+  if (z == nil) then z=0 end
+  tiltvals.z = z
+  redraw()
+end
+
 function grid_key(x, y, z)
   focus.x = x
   focus.y = y
@@ -388,11 +420,14 @@ function redraw()
 
   screen.text("Rotation = " .. rdeg)
 
-  screen.move(0, 50)
-  screen.text("Grid Key: "..focus.x..", "..focus.y..", "..focus.z)
-
-  screen.move(0, 34)
+  screen.move(0, 33)
   screen.text("Pattern: ".. patterns[selectedpattern])
+
+  screen.move(0, 42)
+  screen.text("Tilt: "..tiltvals.x..", "..tiltvals.y..", "..tiltvals.z)
+
+  screen.move(0, 51)
+  screen.text("Grid Key: "..focus.x..", "..focus.y..", "..focus.z)
 
 
   screen.move(0, 60)
@@ -406,5 +441,5 @@ end
 
 -- called on script quit, release memory
 function cleanup ()
-  
+  grid_device:tilt_enable(0,0) -- sensor 0, 0 = off
 end
