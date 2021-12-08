@@ -87,6 +87,12 @@ function init()
     action = function(value) 
         grid_device:rotation(value-1)
         rotationpos = value 
+        grid_w = grid_device.cols
+        grid_h = grid_device.rows
+        print ("grid " .. grid.vports[devicepos].name.." "..grid_w .."x"..grid_h)
+       for i = 1, grid_w*grid_h do
+          pixels[i] = 0
+        end
     end}
 
   params:add{type = "option", id = "tilt", name = "Tilt Enable", options = {"off","on"}, default = 1,
@@ -104,7 +110,7 @@ function init()
 end
 
 function connect()
-  grid_device = grid.connect()
+  grid_device = grid.connect(devicepos)
   grid_device.key = grid_key
   grid_device.tilt = grid_tilt
   grid_device.add = on_grid_add
