@@ -115,6 +115,7 @@ function connect()
   grid_device.tilt = grid_tilt
   grid_device.add = on_grid_add
   grid_device.remove = on_grid_remove
+  grid_device:rotation(rotationpos)
   grid_w = grid_device.cols
   grid_h = grid_device.rows
   for i = 1, grid_w*grid_h do
@@ -447,4 +448,5 @@ end
 -- called on script quit, release memory
 function cleanup ()
   grid_device:tilt_enable(0,0) -- sensor 0, 0 = off
+  grid_device:rotation(0)
 end
