@@ -54,7 +54,7 @@ function init()
   print ("grid " .. grid.vports[devicepos].name.." "..grid_w .."x"..grid_h)
   grid_device:rotation(0)
 
-  grid_device:tilt_enable(0,tiltEnable and 1 or 0) -- sensor number	0-7, 1 = on , 
+--  grid_device:tilt_enable(0,tiltEnable and 1 or 0) -- sensor number	0-7, 1 = on , 
 
 
   -- Get a list of grid devices
@@ -71,7 +71,7 @@ function init()
       grid_device.key = nil
       grid_device = grid.connect(value)
       grid_device.key = grid_key
-      grid_device.tilt = grid_tilt
+--      grid_device.tilt = grid_tilt
       grid_dirty = true
       grid_w = grid_device.cols
       grid_h = grid_device.rows
@@ -79,7 +79,7 @@ function init()
       for i = 1, grid_w*grid_h do
         pixels[i] = 0
       end
-      grid_device:tilt_enable(0,tiltEnable and 1 or 0)
+--      grid_device:tilt_enable(0,tiltEnable and 1 or 0)
       print ("grid selected " .. grid.vports[devicepos].name.." "..grid_w .."x"..grid_h)
     end}
     
@@ -95,11 +95,11 @@ function init()
         end
     end}
 
-  params:add{type = "option", id = "tilt", name = "Tilt Enable", options = {"off","on"}, default = 1,
-    action = function(value) 
-        grid_device:tilt_enable(0,value-1)
-        if (value == 2) then tiltEnable = true else tiltEnable = false end
-    end}
+--  params:add{type = "option", id = "tilt", name = "Tilt Enable", options = {"off","on"}, default = 1,
+--    action = function(value) 
+--        grid_device:tilt_enable(0,value-1)
+--        if (value == 2) then tiltEnable = true else tiltEnable = false end
+--    end}
 
   -- setup pixel array for oled
   -- for i = 1, grid_w*grid_h do
@@ -112,7 +112,7 @@ end
 function connect()
   grid_device = grid.connect(devicepos)
   grid_device.key = grid_key
-  grid_device.tilt = grid_tilt
+--  grid_device.tilt = grid_tilt
   grid_device.add = on_grid_add
   grid_device.remove = on_grid_remove
   grid_device:rotation(rotationpos)
@@ -447,6 +447,6 @@ end
 
 -- called on script quit, release memory
 function cleanup ()
-  grid_device:tilt_enable(0,0) -- sensor 0, 0 = off
+--  grid_device:tilt_enable(0,0) -- sensor 0, 0 = off
   grid_device:rotation(0)
 end
