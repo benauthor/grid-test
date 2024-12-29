@@ -1,23 +1,23 @@
---   . . . . . . . . 
---   . . . . . . . .  GRID 
+--   . . . . . . . .
+--   . . . . . . . .  GRID
 --   . . . . . . . .  TEST
---   . . . . . . . . 
---   . . . . . . . .   
---   . . . . . . . . 
+--   . . . . . . . .
+--   . . . . . . . .
+--   . . . . . . . .
 --   . . . . . . . .   v0.1.5
---   . . . . . . . . 
+--   . . . . . . . .
 
 
 
 
 -- GRID TEST 0.1.5
 -- @okyeron
--- 
--- 
+--
+--
 
 --  K2 : 2 second press + release = all leds on
 --  K2 : Short press + release = all leds off - or cancel pattern
--- 
+--
 --  K3 : Fire Test Pattern
 
 --  E3 : Select Test Pattern
@@ -39,8 +39,8 @@ local focus = { x = 0, y = 0, z = 0 }
 local tiltvals = { x = 0, y = 0, z = 0 }
 
 local pixels = {}
-local patterns = {"fade", "chase", "diagonal", "random"}
-local selectedpattern = 1
+local patterns = {"fade", "chase", "diagonal", "random", "lines"}
+local selectedpattern = 5
 local grid_device
 local grid_w
 local grid_h
@@ -54,16 +54,16 @@ function init()
   print ("grid " .. grid.vports[devicepos].name.." "..grid_w .."x"..grid_h)
   grid_device:rotation(0)
 
---  grid_device:tilt_enable(0,tiltEnable and 1 or 0) -- sensor number	0-7, 1 = on , 
+--  grid_device:tilt_enable(0,tiltEnable and 1 or 0) -- sensor number	0-7, 1 = on ,
 
 
   -- Get a list of grid devices
   for id,device in pairs(grid.vports) do
     grds[id] = device.name
   end
-  
+
   -- setup params
-  
+
   params:add{type = "option", id = "grid_device", name = "Grid", options = grds , default = 1,
     action = function(value)
       grid_device:all(0)
@@ -82,11 +82,11 @@ function init()
 --      grid_device:tilt_enable(0,tiltEnable and 1 or 0)
       print ("grid selected " .. grid.vports[devicepos].name.." "..grid_w .."x"..grid_h)
     end}
-    
+
   params:add{type = "option", id = "rotation", name = "Rotation", options = {"0","90","180","270"}, default = 1,
-    action = function(value) 
+    action = function(value)
         grid_device:rotation(value-1)
-        rotationpos = value 
+        rotationpos = value
         grid_w = grid_device.cols
         grid_h = grid_device.rows
         print ("grid " .. grid.vports[devicepos].name.." "..grid_w .."x"..grid_h)
@@ -96,7 +96,7 @@ function init()
     end}
 
 --  params:add{type = "option", id = "tilt", name = "Tilt Enable", options = {"off","on"}, default = 1,
---    action = function(value) 
+--    action = function(value)
 --        grid_device:tilt_enable(0,value-1)
 --        if (value == 2) then tiltEnable = true else tiltEnable = false end
 --    end}
@@ -105,7 +105,7 @@ function init()
   -- for i = 1, grid_w*grid_h do
   --   pixels[i] = 0;
   -- end
-    
+
   setup_metros()
 end
 
@@ -158,7 +158,7 @@ function setup_metros()
     randompattern()
     redraw()
   end
-  
+
 end
 
 function on_grid_add(g)
@@ -196,8 +196,8 @@ function chasepattern()
 
       end
     end
-  end 
-  
+  end
+
 end
 
 function randompattern()
@@ -209,9 +209,8 @@ function randompattern()
         grid_device:led(x, y, brightness)
         pixels[pidx]=brightness
     end
-  end 
+  end
 end
-
 
 function fadepattern()
   for y = 1, grid_h do
@@ -223,7 +222,29 @@ function fadepattern()
       grid_device:led(x, y, brightness)
       pixels[pidx] = brightness
     end
-  end 
+  end
+end
+
+function linespattern()
+  for y = 1, grid_h do
+    for x = 1, grid_w do
+      yoffset = y-1
+      pidx = x + (yoffset * grid_w)
+
+      if y % 2 == 0 and x <= 8 then
+        brightness = 1
+      elseif y % 2 == 0 then
+        brightness = 0
+      elseif y % 2 == 1 and x <= 8 then
+        brightness = 15
+      else
+        brightness = 12
+      end
+
+      grid_device:led(x, y, brightness)
+      pixels[pidx] = brightness
+    end
+  end
 end
 
 function diagonalpattern()
@@ -254,17 +275,17 @@ function diagonalpattern()
       elseif dp - 6 == x+y then
         grid_device:led(x, y, glevel-12)
         pixels[pidx]=glevel-12
-      else 
+      else
         grid_device:led(x, y, dimval)
         pixels[pidx]=0
       end
-    end 
-  end 
+    end
+  end
 end
-  
+
 function gridredraw()
   grid_device:refresh()
-end 
+end
 
 function gridfrompixels()
   for x = 1, grid_w do
@@ -273,7 +294,7 @@ function gridfrompixels()
       pidx = x + (yoffset * grid_w)
       grid_device:led(x, y, pixels[pidx])
     end
-  end 
+  end
 end
 
 function grid_tilt(sensor, x, y, z)
@@ -292,18 +313,18 @@ function grid_key(x, y, z)
   focus.z = z
   yoffset = y-1
   pidx = x + (yoffset * grid_w)
-  
+
   local grid_h = grid_h
   if z > 0 then
     if pixels[pidx]>0 then
       grid_device:led(x, y, 0)
       pixels[pidx]=0
 
-    else 
+    else
       grid_device:led(x, y, 15)
       pixels[pidx]=15
 
-    end 
+    end
   end
   redraw()
 end
@@ -328,7 +349,7 @@ function key(n, z)
   if n==1 then
 
   end
-  
+
   if n==2 then
     if z == 1 then
       down_time = util.time()
@@ -343,13 +364,13 @@ function key(n, z)
         print("all leds on")
       end
     end
-  end 
+  end
   if n==3 and z==1 then
     stopallpatterns()
     dp = 0
     cp = 0
     rp = 0
-    
+
     if selectedpattern == 1 then
       fadepattern()
     elseif selectedpattern == 2 then
@@ -358,9 +379,11 @@ function key(n, z)
       dpattern:start()
     elseif selectedpattern == 4 then
       rpattern:start()
+    elseif selectedpattern == 5 then
+      linespattern()
     end
-  end 
-  
+  end
+
   -- redraw screen
   redraw()
 end
@@ -384,11 +407,11 @@ end
 function draw_grid()
   screen.level(1)
   offset = { x = 76, y = 2, spacing = 3 }
-  for x=1,grid_w,1 do 
-    for y=1,grid_h,1 do 
+  for x=1,grid_w,1 do
+    for y=1,grid_h,1 do
       yoffset = y-1
       pidx = x + (yoffset * grid_w)
-      
+
       draw_pixel(x,y,pixels[pidx])
     end
   end
@@ -400,7 +423,7 @@ end
 -- screen redraw function
 function redraw()
   local rdeg
- 
+
    gridredraw()
 
  -- screen: turn on anti-alias
@@ -408,8 +431,8 @@ function redraw()
   screen.line_width(1.0)
   -- clear screen
   screen.clear()
-  
-  
+
+
   -- set pixel brightness (0-15)
   screen.level(15)
   screen.move(0, 8)
@@ -430,8 +453,8 @@ function redraw()
   if (tiltEnable) then
     screen.move(0, 42)
     screen.text("Tilt: "..tiltvals.x..", "..tiltvals.y..", "..tiltvals.z)
-  end 
-  
+  end
+
   screen.move(0, 51)
   screen.text("Grid Key: "..focus.x..", "..focus.y..", "..focus.z)
 
@@ -440,7 +463,7 @@ function redraw()
   screen.text(devicepos .. ": "..grid.vports[devicepos].name.." "..grid_w .."x"..grid_h)
 
   draw_grid()
-  
+
   -- refresh screen
   screen.update()
 end
